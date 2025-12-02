@@ -98,6 +98,35 @@ double analyzeCompositionScore(const string& password){
   Return format:
     value between 0 and 10 
  */
+  bool hasLower = false;
+  bool hasUpper = false;
+  bool hasDigit = false;
+  bool hasSpecial = false;
+
+  for (char c : password) {
+    if (islower(c)) hasLower = true;
+    else if (isupper(c)) hasUpper = true;
+    else if (isdigit(c)) hasDigit = true;
+    else hasSpecial = true;
+  }
+
+  cout << "\nImprovements: " << endl;
+  if (!hasLower)
+        cout << "- Add lowercase letters (a–z)\n";
+    if (!hasUpper)
+        cout << "- Add uppercase letters (A–Z)\n";
+    if (!hasDigit)
+        cout << "- Add digits (0–9)\n";
+    if (!hasSpecial)
+        cout << "- Add special characters (!@#$%^&*, etc.)\n";
+
+  int categories = hasLower + hasUpper + hasDigit + hasSpecial;
+
+  if (categories == 1) return 2; 
+  if (categories == 2) return 5;
+  if (categories == 3) return 8;
+  if (categories == 4) return 10;
+
   return 0.0;
 }
 
@@ -109,5 +138,7 @@ int main() {
   
   double lengthScore = analyzeLengthScore(password);
   cout << lengthScore << endl;
+  double compositionScore = analyzeCompositionScore(password);
+  cout << "Character Diversity Score: " << compositionScore << endl;  
   return 0;
 }
