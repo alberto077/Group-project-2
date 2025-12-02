@@ -137,7 +137,7 @@ int main() {
   cin >> password;
   
   double lengthScore = analyzeLengthScore(password);
-  cout << lengthScore << endl;
+  cout << "Score Length" << lengthScore << endl;
   double compositionScore = analyzeCompositionScore(password);
   cout << "Character Diversity Score: " << compositionScore << endl;  
   return 0;
