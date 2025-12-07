@@ -4,6 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <cmath>
+#include <cctype>
 #include <algorithm>
 
 
@@ -40,7 +41,7 @@ double analyzeLengthScore(const string& password) {
 
 
     if (length < 8) {
-        cout << "The NIST recommends a minimum password length of 8 characters for accounts where password is the only authentication factor, with a best practice of 15 characters or more." << endl;
+        cout << "\nThe NIST recommends a minimum password length of 8 characters for accounts where password is the only authentication factor, with a best practice of 15 characters or more." << endl;
         return 0.0;
     }
     else{
@@ -104,22 +105,12 @@ double analyzeCompositionScore(const string& password){
   bool hasSpecial = false;
 
   for (char c : password) {
-    if (islower(c)) hasLower = true;
-    else if (isupper(c)) hasUpper = true;
-    else if (isdigit(c)) hasDigit = true;
+    if (islower((unsigned char)c)) hasLower = true;
+    else if (isupper((unsigned char)c)) hasUpper = true;
+    else if (isdigit((unsigned char)c)) hasDigit = true;
     else hasSpecial = true;
   }
-
-  cout << "\nImprovements: " << endl;
-  if (!hasLower)
-        cout << "- Add lowercase letters (a–z)\n";
-    if (!hasUpper)
-        cout << "- Add uppercase letters (A–Z)\n";
-    if (!hasDigit)
-        cout << "- Add digits (0–9)\n";
-    if (!hasSpecial)
-        cout << "- Add special characters (!@#$%^&*, etc.)\n";
-
+  
   int categories = hasLower + hasUpper + hasDigit + hasSpecial;
 
   if (categories == 1) return 2; 
@@ -130,15 +121,56 @@ double analyzeCompositionScore(const string& password){
   return 0.0;
 }
 
+void generateFeedback(const string& password, vector<string>& feedback) {
+// Function used to give users feedback on their passwords.
+
+    bool hasLower = false;
+    bool hasUpper = false;
+    bool hasDigit = false;
+    bool hasSpecial = false;
+
+    for (char c : password) {   
+        if (islower((unsigned char)c)) hasLower = true;
+        else if (isupper((unsigned char)c)) hasUpper = true;
+        else if (isdigit((unsigned char)c)) hasDigit = true;
+        else hasSpecial = true;
+    }
+
+    if (!hasLower)
+        feedback.push_back("Add lowercase letters (a–z).");
+
+    if (!hasUpper)
+        feedback.push_back("Add uppercase letters (A–Z).");
+
+    if (!hasDigit)
+        feedback.push_back("Add digits (0–9).");
+
+    if (!hasSpecial)
+        feedback.push_back("Add special characters (!@#$%^&*, etc.).");
+}
+
+
 int main() {
   string password;
+  vector<string> feedback;
 
-  cout << "Enter a password to test" << endl;
+  cout << "***Password Strength Evaluation Program***" << endl;
+  cout << "\nEnter a password to test:" << endl;
   cin >> password;
-  
+
   double lengthScore = analyzeLengthScore(password);
-  cout << "Score Length" << lengthScore << endl;
+  cout << "\nScore Length: " << lengthScore << endl;
   double compositionScore = analyzeCompositionScore(password);
-  cout << "Character Diversity Score: " << compositionScore << endl;  
+  cout << "Character Diversity Score: " << compositionScore << endl;
+  generateFeedback(password, feedback);
+  if (!feedback.empty()) {
+    cout << "\nSuggestions:\n";
+    for (const string& msg : feedback) {
+        cout << "- " << msg << endl;
+    }
+} else {
+    cout << "\nGreat job! No suggestions needed.\n";
+}
+
   return 0;
 }
