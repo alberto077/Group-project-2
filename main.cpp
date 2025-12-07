@@ -41,7 +41,7 @@ double analyzeLengthScore(const string& password) {
 
 
     if (length < 8) {
-        cout << "\nThe NIST recommends a minimum password length of 8 characters for accounts where password is the only authentication factor, with a best practice of 15 characters or more." << endl;
+        cout << "\n- The NIST recommends a minimum password length of 8 characters for accounts where password is the only authentication factor, with a best practice of 15 characters or more." << endl;
         return 0.0;
     }
     else{
@@ -77,9 +77,86 @@ double analyzeCommonPasswordScore(const string& password,const unordered_set<str
   Return format:
     value between 0 and 10.
   */
-  return 0.0;
-}
+    
+  int length = password.length();
 
+    // Rule 1: Exact match
+    if (weakPasswords.find(password) != weakPasswords.end()) {
+        cout << "\n- This password is not secure, found in list of common passwords.Change it to something random. " << endl;
+        return 0.0;
+    }
+
+    for (const string& weak : weakPasswords) {
+
+      if (weak.length() < 4) continue;
+        // Weak password + 1–2 extra characters
+
+        if (password.find(weak) == 0) {
+            int extra = length - weak.length();
+
+            if (extra == 1) {
+                cout << "\nPassword is very weak (simple modification)." << endl;
+                cout << "Suggestion: Avoid adding just one character. Use a longer, unpredictable password.\n";
+                return 1.0;
+            }
+
+            if (extra == 2) {
+                cout << "\nPassword is weak (minor modification)." << endl;
+                cout << "Suggestion: Add more randomness and mix uppercase, numbers, and symbols.\n";
+                return 3.0;
+            }
+        }
+
+        // Weak password appears inside with more randomness
+        if (password.find(weak) != string::npos) {
+            int extra = length - weak.length();
+
+            if (extra <= 3) {
+                cout << "\nPassword is weak (common word found)." << endl;
+                cout << "Suggestion: Remove the common word entirely.\n";
+                return 3.0;
+            }
+
+            if (extra <= 5) {
+                
+                cout << "\nPassword is moderate but still risky." << endl;
+                cout << "Suggestion: Increase length and add more unpredictability.\n";
+                return 5.0;
+            }
+
+            
+            cout << "\nPassword is moderate strength." << endl;
+            cout << "Suggestion: Still contains weak patterns. Consider a completely random password.\n";
+            return 6.0;
+        }
+    }
+
+
+    if (length >= 12) {
+        
+        cout << "\nPassword is very strong." << endl;
+        cout << "Great job! Keep using long, complex passwords.\n";
+        return 10.0;
+    }
+
+    if (length >= 10) {
+        
+        cout << "\nPassword is strong." << endl;
+        cout << "Suggestion: Adding one more symbol could make it even stronger.\n";
+        return 9.0;
+    }
+
+    if (length >= 8) {
+        
+        cout << "\nPassword is fairly strong." << endl;
+        cout << "Suggestion: Consider increasing length or adding more symbols.\n";
+        return 8.0;
+    }
+
+    cout << "\nPassword is decent but could be stronger." << endl;
+    cout << "Suggestion: Increase length and include symbols and numbers.\n";
+    return 7.0;
+}
 
 double analyzeCompositionScore(const string& password){
   /*
@@ -152,7 +229,10 @@ void generateFeedback(const string& password, vector<string>& feedback) {
 
 int main() {
   string password;
+  double total;
   vector<string> feedback;
+  unordered_set<string> weakPasswords = loadWeakPasswords("passwords.txt");
+
 
   cout << "***Password Strength Evaluation Program***" << endl;
   cout << "\nEnter a password to test:" << endl;
@@ -160,8 +240,12 @@ int main() {
 
   double lengthScore = analyzeLengthScore(password);
   cout << "\nScore Length: " << lengthScore << endl;
+
+  double commonScore = analyzeCommonPasswordScore(password, weakPasswords);
+  cout << "\nCommon Password Score: " << commonScore << endl;
+
   double compositionScore = analyzeCompositionScore(password);
-  cout << "Character Diversity Score: " << compositionScore << endl;
+  cout << "\nCharacter Diversity Score: " << compositionScore << endl;
   generateFeedback(password, feedback);
   if (!feedback.empty()) {
     cout << "\nSuggestions:\n";
@@ -171,6 +255,10 @@ int main() {
 } else {
     cout << "\nGreat job! No suggestions needed.\n";
 }
+
+total = lengthScore + commonScore + compositionScore;
+
+cout << "\nTotal Score: " << total << "/30" << endl;
 
   return 0;
 }
