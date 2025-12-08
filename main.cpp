@@ -80,7 +80,7 @@ double analyzeCommonPasswordScore(const string& password,const unordered_set<str
     
   int length = password.length();
 
-    // Rule 1: Exact match
+    // 1. Exact Match
     if (weakPasswords.find(password) != weakPasswords.end()) {
         cout << "\n- This password is not secure, found in list of common passwords.Change it to something random. " << endl;
         return 0.0;
@@ -89,7 +89,7 @@ double analyzeCommonPasswordScore(const string& password,const unordered_set<str
     for (const string& weak : weakPasswords) {
 
       if (weak.length() < 4) continue;
-        // Weak password + 1–2 extra characters
+        // 2. Weak password + 1–2 extra characters
 
         if (password.find(weak) == 0) {
             int extra = length - weak.length();
@@ -107,7 +107,7 @@ double analyzeCommonPasswordScore(const string& password,const unordered_set<str
             }
         }
 
-        // Weak password appears inside with more randomness
+        // 3. Weak password appears inside with more randomness
         if (password.find(weak) != string::npos) {
             int extra = length - weak.length();
 
@@ -152,7 +152,7 @@ double analyzeCommonPasswordScore(const string& password,const unordered_set<str
         cout << "Suggestion: Consider increasing length or adding more symbols.\n";
         return 8.0;
     }
-
+     // 4. No similarity or weak pattern is detected
     cout << "\nPassword is decent but could be stronger." << endl;
     cout << "Suggestion: Increase length and include symbols and numbers.\n";
     return 7.0;
@@ -235,6 +235,7 @@ int main() {
 
 
   cout << "***Password Strength Evaluation Program***" << endl;
+  cout << "By: Harpreet Singh, Alberto Santana, and Jordanna Jervis" << endl;
   cout << "\nEnter a password to test:" << endl;
   cin >> password;
 
