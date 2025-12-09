@@ -229,12 +229,12 @@ void generateFeedback(const string& password, vector<string>& feedback) {
 
 int main() {
   string password;
-  double total;
+  int total;
   vector<string> feedback;
   unordered_set<string> weakPasswords = loadWeakPasswords("passwords.txt");
 
 
-  cout << "***Password Strength Evaluation Program***" << endl;
+  cout << "Password Strength Evaluation Program" << endl;
   cout << "By: Harpreet Singh, Alberto Santana, and Jordanna Jervis" << endl;
   cout << "\nEnter a password to test:" << endl;
   cin >> password;
@@ -257,9 +257,9 @@ int main() {
     cout << "\nGreat job! No suggestions needed.\n";
 }
 
-total = lengthScore + commonScore + compositionScore;
+total = ((lengthScore + commonScore + compositionScore) / 30) * 100;
 
-cout << "\nTotal Score: " << total << "/30" << endl;
+cout << "\nYour Password is : " << total << "%" << " safe." << endl;
 
   return 0;
 }
